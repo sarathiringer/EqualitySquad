@@ -21,7 +21,62 @@ app.layout = html.Div([
         dcc.Graph(id="distribution", style={'display': 'inline-block', 'width': '33%'}),
         dcc.Graph(id="pay", style={'display': 'inline-block', 'width': '33%'}),
     ]),
-    html.P("Choose what you care about:"),
+    html.Div(children=[
+        html.P("Rate to what extent you care about the following factors:",
+            style={'color': '#3da4ab', 
+            'fontSize': 19, 
+            'text-align' : 'center',
+            'font-family' : 'Gill Sans',
+            }),
+        dcc.Slider(
+            id='slider-health',
+            min=1,
+            max=5,
+            step=0.5,
+            value=10,
+            marks={
+                1: '1',
+                2: '2',
+                3: '3',
+                4: '4',
+                5: '5'
+            },
+            tooltip={"placement": "left", "always_visible": True},
+        ),
+        html.Br(),
+        dcc.Slider(
+            id='slider-distribution',
+            min=1,
+            max=5,
+            step=0.5,
+            value=10,
+            marks={
+                1: '1',
+                2: '2',
+                3: '3',
+                4: '4',
+                5: '5'
+            },
+            tooltip={"placement": "left", "always_visible": True},
+        ),
+        html.Br(),
+        dcc.Slider(
+            id='slider-pay',
+            min=1,
+            max=5,
+            step=0.5,
+            value=10,
+            marks={
+                1: '1',
+                2: '2',
+                3: '3',
+                4: '4',
+                5: '5'
+            },
+            tooltip={"placement": "left", "always_visible": True},
+        )],
+        style={'width': '50%', 'padding' : 50, 'margin' : '0 auto'},
+    ),
     dcc.Dropdown(
         id="dropdown",
         options=[
