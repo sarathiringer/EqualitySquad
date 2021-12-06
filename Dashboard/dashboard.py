@@ -86,6 +86,7 @@ app.layout = html.Div([
         value='Distribution',
         clearable=False,
     ),
+    dcc.Graph(id="index"),
 ])
 
 @app.callback(
@@ -141,6 +142,41 @@ def display_pay(value):
         template=TEMPLATE,
     )
     return fig
+
+@app.callback(
+    Output(component_id="index", component_property="figure"), 
+    [Input("dropdown", "value")])
+def display_index(value):
+    opacity = [0.5, 0.7, 0.9]
+    rgba = [
+        "rgba(89, 209, 240, ",
+        "rgba(9, 158, 109, ",
+        "rgba(235, 96, 61, ",
+    ]
+    colors = []
+    for i in range(len(opacity)):
+        color = rgba[i] + str(opacity[i]) + ")"
+        colors.append(color)
+    fig = go.Figure(go.Barpolar(
+        r=[0.75, 1.8, 1.3],
+        theta=[30, 90, 150],
+        width=[58] * 3,
+        marker_color=colors,
+    ))
+
+    fig.update_layout(
+        template='simple_white',
+        polar = dict(
+            radialaxis = dict(range=[0, 2], showticklabels=False, ticks=''),
+            angularaxis = dict(showticklabels=False, ticks=''),
+            sector = [0, 180],
+        ),
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)'
+    )
+
+    return fig
+
 
 if __name__ == "__main__":
     app.run_server(debug=True)
