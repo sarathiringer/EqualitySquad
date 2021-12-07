@@ -12,91 +12,61 @@ TEMPLATE = 'plotly_white'
 app.layout = html.Div([
     html.H1("Gender Equality Index", 
         style={'color': '#3da4ab', 
-        'fontSize': 24, 
+        'fontSize': 44, 
         'text-align' : 'center',
         'font-family' : 'Gill Sans',
         }),
+    dcc.Graph(id='index'),
+    html.H2("1.4", 
+        style={'color': '#3da4ab', 
+        'fontSize': 100, 
+        'text-align' : 'center',
+        'font-family' : 'Gill Sans',
+    }),
     html.Div(children=[
         dcc.Graph(id="health", style={'display': 'inline-block', 'width': '33%'}),
         dcc.Graph(id="distribution", style={'display': 'inline-block', 'width': '33%'}),
         dcc.Graph(id="pay", style={'display': 'inline-block', 'width': '33%'}),
     ]),
     html.Div(children=[
-        html.P("Rate to what extent you care about the following factors:",
+        html.P("Which factors do your care about?",
             style={'color': '#3da4ab', 
             'fontSize': 19, 
             'text-align' : 'center',
             'font-family' : 'Gill Sans',
-            }),
-        dcc.Slider(
-            id='slider-health',
-            min=1,
-            max=5,
-            step=0.5,
-            value=10,
-            marks={
-                1: '1',
-                2: '2',
-                3: '3',
-                4: '4',
-                5: '5'
-            },
-            tooltip={"placement": "left", "always_visible": True},
+            }
         ),
-        html.Br(),
-        dcc.Slider(
-            id='slider-distribution',
-            min=1,
-            max=5,
-            step=0.5,
-            value=10,
-            marks={
-                1: '1',
-                2: '2',
-                3: '3',
-                4: '4',
-                5: '5'
-            },
-            tooltip={"placement": "left", "always_visible": True},
+        dcc.Checklist(
+            id = 'checklist',
+            options=[
+                {'label': 'Health', 'value': 'health'},
+                {'label': 'Overall distribution', 'value': 'distribution'},
+                {'label': 'Pay', 'value': 'pay'}
+            ],
+            value=['health', 'distribution', 'pay'],
+            style={'fontSize': 18, 
+                'text-align' : 'center',
+                'font-family' : 'Gill Sans',
+            }
         ),
-        html.Br(),
-        dcc.Slider(
-            id='slider-pay',
-            min=1,
-            max=5,
-            step=0.5,
-            value=10,
-            marks={
-                1: '1',
-                2: '2',
-                3: '3',
-                4: '4',
-                5: '5'
-            },
-            tooltip={"placement": "left", "always_visible": True},
-        )],
+        ],
         style={'width': '50%', 'padding' : 50, 'margin' : '0 auto'},
     ),
-    dcc.Dropdown(
-        id="dropdown",
-        options=[
-            {'label': x, 'value': x}
-            for x in ['Health', 'Distribution']
-        ],
-        value='Distribution',
-        clearable=False,
-    ),
-    dcc.Graph(id="index"),
 ])
 
 @app.callback(
     Output(component_id="health", component_property="figure"), 
-    [Input("dropdown", "value")])
-def display_health(value):
+    [Input(component_id="checklist", component_property="value")])
+def display_health(options_chosen):
+    if 'health' in options_chosen:
+        op = 1
+    else:
+        op = 0.2
     fig = go.Figure(
         data=go.Bar(y=[8.6, 3.0], 
             x = ["Women", "Men"],
-            marker=dict(color = ['#3da4ab', '#fe8a71'])))
+            marker=dict(color = ['#3da4ab', '#fe8a71']),
+            opacity=op))
     fig.update_layout(
         title="Average number of sick days by gender",
         template=TEMPLATE,
@@ -105,13 +75,18 @@ def display_health(value):
 
 @app.callback(
     Output(component_id="distribution", component_property="figure"), 
-    [Input("dropdown", "value")])
-def display_distribution(value):
+    [Input("checklist", "value")])
+def display_distribution(options_chosen):
+    if 'distribution' in options_chosen:
+        op = 1
+    else:
+        op = 0.2
     fig = go.Figure(
         data=[go.Pie(labels=["Women", "Men"], 
             values=[12821, 49129], 
             hole=.5,
-            marker=dict(colors = ['#3da4ab', '#fe8a71']))])
+            marker=dict(colors = ['#3da4ab', '#fe8a71']),
+            opacity=op)])
     fig.update_layout(
         title="Number of employees by gender",
         template=TEMPLATE,
@@ -120,8 +95,12 @@ def display_distribution(value):
 
 @app.callback(
     Output(component_id="pay", component_property="figure"), 
-    [Input("dropdown", "value")])
-def display_pay(value):
+    [Input("checklist", "value")])
+def display_pay(options_chosen):
+    if 'pay' in options_chosen:
+        op = 1
+    else:
+        op = 0.2
     years = list(range(2014, 2019))
     male_pay = [100] * len(years)
     female_pay = [96, 97, 96, 101, 98]
@@ -130,11 +109,13 @@ def display_pay(value):
             go.Scatter(x=years, y=male_pay,
                         mode='lines+markers',
                         name='Men',
-                        marker_color='#fe8a71'),
+                        marker_color='#fe8a71',
+                        opacity=op),
             go.Scatter(x=years, y=female_pay,
                         mode='lines+markers',
                         name='Women',
-                        marker_color='#3da4ab')
+                        marker_color='#3da4ab',
+                        opacity=op)
         ]
     )
     fig.update_layout(
@@ -144,10 +125,10 @@ def display_pay(value):
     return fig
 
 @app.callback(
-    Output(component_id="index", component_property="figure"), 
-    [Input("dropdown", "value")])
+    Output(component_id="index", component_property="figure"),
+    [Input("checklist", "value")])
 def display_index(value):
-    opacity = [0.5, 0.7, 0.9]
+    opacity = [1, 1, 1]
     rgba = [
         "rgba(89, 209, 240, ",
         "rgba(9, 158, 109, ",
